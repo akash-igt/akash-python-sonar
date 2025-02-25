@@ -42,4 +42,4 @@ jobs:
             -Dsonar.projectKey=akash-python-sonar \
             -Dsonar.sources=. \
             -Dsonar.host.url=http://13.232.4.242:9091 \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.login=sqp_d09f144a413eb41ef1b7071a7f7626dd7675f859
