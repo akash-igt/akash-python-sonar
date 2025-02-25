@@ -1,0 +1,21 @@
+name: Devops SonarQube Analysis by Akash
+ 
+on:
+  push:
+    branches:
+      - main
+ 
+jobs:
+  sonar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+ 
+      - name: Run SonarScanner
+        run: |
+          docker run --rm -v "$(pwd):/usr/src" sonarsource/sonar-scanner-cli \
+            -Dsonar.projectKey=akash-python-sonar \
+            -Dsonar.sources=. \
+            -Dsonar.host.url=http://13.232.4.242:9091 \
+            -Dsonar.login=sqp_d09f144a413eb41ef1b7071a7f7626dd7675f859
