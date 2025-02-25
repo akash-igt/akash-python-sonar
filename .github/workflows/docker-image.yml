@@ -1,21 +1,45 @@
-name: Devops SonarQube Analysis by Akash
- 
+name: DevOps CI/CD Pipeline and Sonarqube by Akash
+
 on:
   push:
     branches:
       - main
- 
+
 jobs:
-  sonar:
+  build-and-push:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
- 
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.USER }}
+          password: ${{ secrets.PASS }}
+
+      - name: Build Docker Image
+        run: |
+          docker build -t ${{ secrets.USER }}/akash-python-sonar:v1 .
+
+      - name: Push Docker Image to Docker Hub
+        run: |
+          docker push ${{ secrets.PASS }}/akash-python-sonar:v1
+
+  sonar:
+    runs-on: ubuntu-latest
+    needs: build-and-push  # Ensure Docker build completes first
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
       - name: Run SonarScanner
         run: |
           docker run --rm -v "$(pwd):/usr/src" sonarsource/sonar-scanner-cli \
             -Dsonar.projectKey=akash-python-sonar \
             -Dsonar.sources=. \
             -Dsonar.host.url=http://13.232.4.242:9091 \
-            -Dsonar.login=sqp_d09f144a413eb41ef1b7071a7f7626dd7675f859
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
